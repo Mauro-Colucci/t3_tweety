@@ -27,9 +27,6 @@ const LoginModal = () => {
     }
   };
 
-  const sess = useSession();
-  console.log(sess);
-
   const onToggle = () => {
     if (isLoading) return;
     loginModal.onClose();
