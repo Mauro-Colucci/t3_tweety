@@ -11,6 +11,7 @@ const server = z.object({
     process.env.NODE_ENV === "production"
       ? z.string().min(1)
       : z.string().min(1).optional(),
+  NEXTAUTH_JWT_SECRET: z.string().min(1),
   NEXTAUTH_URL: z.preprocess(
     // This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
     // Since NextAuth.js automatically uses the VERCEL_URL if present.
@@ -40,6 +41,7 @@ const client = z.object({
 const processEnv = {
   DATABASE_URL: process.env.DATABASE_URL,
   NODE_ENV: process.env.NODE_ENV,
+  NEXTAUTH_JWT_SECRET: process.env.NEXTAUTH_JWT_SECRET,
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
   NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   GITHUB_ID: process.env.GITHUB_ID,

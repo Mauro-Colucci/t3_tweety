@@ -3,6 +3,8 @@ import Input from "../Input";
 import Modal from "../Modal";
 import useRegisterModal from "~/hooks/useRegisterModal";
 import useLoginModal from "~/hooks/useLoginModal";
+import { api } from "~/utils/api";
+import { toast } from "react-hot-toast";
 
 const RegisterModal = () => {
   const registerModal = useRegisterModal();
@@ -12,19 +14,29 @@ const RegisterModal = () => {
   const [name, setName] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const onSubmit = async () => {
-    try {
-      setIsLoading(true);
-      //todo register
-      //this will be rewritten, since I'll use trpc
+  const { mutate, isLoading } = api.user.createAccount.useMutation({
+    onSuccess: () => {
       registerModal.onClose();
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
+      toast.success("Account created.");
+    },
+    onError: (err) => {
+      const errorMessage = err.data?.zodError?.fieldErrors.password;
+      if (errorMessage && errorMessage[0]) {
+        toast.error(errorMessage[0]);
+      } else {
+        toast.error(err.message || "Something went wrong.");
+      }
+    },
+  });
+
+  const onSubmit = () => {
+    mutate({
+      email,
+      name,
+      username,
+      password,
+    });
   };
 
   const onToggle = () => {

@@ -1,8 +1,9 @@
 import useLoginModal from "~/hooks/useLoginModal";
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import Input from "../Input";
 import Modal from "../Modal";
 import useRegisterModal from "~/hooks/useRegisterModal";
+import { signIn, useSession } from "next-auth/react";
 
 const LoginModal = () => {
   const loginModal = useLoginModal();
@@ -11,19 +12,23 @@ const LoginModal = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const onSubmit = useCallback(async () => {
+  const onSubmit = async () => {
     try {
       setIsLoading(true);
-      //todo login
-      //this will be rewritten, since I'll use trpc
+      await signIn("credentials", {
+        email,
+        password,
+      });
       loginModal.onClose();
     } catch (error) {
       console.log(error);
     } finally {
       setIsLoading(false);
     }
-  }, [loginModal]);
+  };
+
+  const sess = useSession();
+  console.log(sess);
 
   const onToggle = () => {
     if (isLoading) return;
