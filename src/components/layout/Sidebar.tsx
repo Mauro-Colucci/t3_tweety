@@ -8,6 +8,7 @@ import { signOut, useSession } from "next-auth/react";
 
 const Sidebar = () => {
   const { data: sessionData } = useSession();
+
   const items = [
     {
       label: "Home",

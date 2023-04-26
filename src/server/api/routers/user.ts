@@ -56,4 +56,29 @@ export const userRouter = createTRPCRouter({
     });
     return currentUser;
   }),
+  getAll: publicProcedure.query(async ({ ctx }) => {
+    const users = await ctx.prisma.user.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    return users;
+  }),
+  getById: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          id: input.userId,
+        },
+      });
+      const followersCount = await ctx.prisma.user.count({
+        where: {
+          followingIds: {
+            has: input.userId,
+          },
+        },
+      });
+      return { ...user, followersCount };
+    }),
 });
