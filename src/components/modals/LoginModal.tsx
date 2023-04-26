@@ -3,7 +3,7 @@ import { useState } from "react";
 import Input from "../Input";
 import Modal from "../Modal";
 import useRegisterModal from "~/hooks/useRegisterModal";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 
 const LoginModal = () => {
   const loginModal = useLoginModal();

@@ -10,6 +10,7 @@ import Layout from "~/components/Layout";
 import RegisterModal from "~/components/modals/RegisterModal";
 import LoginModal from "~/components/modals/LoginModal";
 import Head from "next/head";
+import EditModal from "~/components/modals/EditModal";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -23,6 +24,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Toaster position="bottom-center" />
+      <EditModal />
       <RegisterModal />
       <LoginModal />
       <Layout>

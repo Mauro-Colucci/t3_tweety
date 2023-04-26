@@ -4,6 +4,7 @@ import { RouterOutputs } from "~/utils/api";
 import moment from "moment";
 import Button from "../Button";
 import { BiCalendar } from "react-icons/bi";
+import useEditModal from "~/hooks/useEditModal";
 
 type UserProps = RouterOutputs["user"]["getById"];
 
@@ -17,12 +18,13 @@ const UserBio: FC<UserProps> = ({
   followersCount,
 }) => {
   const { data } = useSession();
+  const editModal = useEditModal();
 
   return (
     <div className="border-b border-neutral-800 pb-4">
       <div className="flex justify-end p-2">
         {data?.user.id === id ? (
-          <Button secondary label="Edit" onClick={() => {}} />
+          <Button secondary label="Edit" onClick={editModal.onOpen} />
         ) : (
           <Button label="Follow" secondary onClick={() => {}} />
         )}

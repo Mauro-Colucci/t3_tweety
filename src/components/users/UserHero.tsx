@@ -3,10 +3,6 @@ import Image from "next/image";
 import Avatar from "../Avatar";
 import { RouterOutputs } from "~/utils/api";
 
-/* interface UserHeroProps {
-  userId: string;
-} */
-
 type UserProps = RouterOutputs["user"]["getById"];
 
 const UserHero: FC<UserProps> = ({ coverImage, id }) => {

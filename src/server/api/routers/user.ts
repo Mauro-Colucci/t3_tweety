@@ -53,6 +53,14 @@ export const userRouter = createTRPCRouter({
       where: {
         id: ctx.session.user.id,
       },
+      select: {
+        id: true,
+        bio: true,
+        coverImage: true,
+        name: true,
+        username: true,
+        profileImage: true,
+      },
     });
     return currentUser;
   }),
@@ -80,5 +88,25 @@ export const userRouter = createTRPCRouter({
         },
       });
       return { ...user, followersCount };
+    }),
+  edit: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        username: z.string(),
+        bio: z.string(),
+        profileImage: z.string().nullable(),
+        coverImage: z.string().nullable(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { user } = ctx.session;
+      const updatedUser = await ctx.prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: { ...input },
+      });
+      return updatedUser;
     }),
 });
