@@ -1,28 +1,26 @@
 import useEditModal from "~/hooks/useEditModal";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import Input from "../Input";
 import Modal from "../Modal";
-import useRegisterModal from "~/hooks/useRegisterModal";
-import { api } from "~/utils/api";
+import { RouterOutputs, api } from "~/utils/api";
 import { toast } from "react-hot-toast";
-import { string } from "zod";
 import ImageUpload from "../ImageUpload";
 
-const EditModal = () => {
+type UserProps = RouterOutputs["user"]["getById"];
+
+const EditModal: FC<UserProps> = (props) => {
   const editModal = useEditModal();
-  const [name, setName] = useState<string | null>("");
-  const [username, setUsername] = useState<string | null>("");
-  const [profileImage, setProfileImage] = useState<string | null>("");
-  const [coverImage, setCoverImage] = useState<string | null>("");
-  const [bio, setBio] = useState<string | null>("");
+  const [name, setName] = useState(props.name);
+  const [username, setUsername] = useState(props.username);
+  const [profileImage, setProfileImage] = useState(props.profileImage!);
+  const [coverImage, setCoverImage] = useState(props.coverImage!);
+  const [bio, setBio] = useState(props.bio);
 
   const ctx = api.useContext();
 
-  const { data: user } = api.user.getCurrent.useQuery();
-
   const { mutate, isLoading } = api.user.edit.useMutation({
     onSuccess: () => {
-      //ctx.user.getCurrent.invalidate();
+      ctx.user.getAll.invalidate();
       ctx.user.getById.invalidate();
       editModal.onClose();
       toast.success("Profile updated.");
@@ -31,22 +29,6 @@ const EditModal = () => {
       toast.error("Something went wrong.");
     },
   });
-
-  useEffect(() => {
-    if (user) {
-      setName(user.name);
-      setUsername(user.username);
-      setProfileImage(user.profileImage);
-      setCoverImage(user.coverImage);
-      setBio(user.bio);
-    }
-  }, [
-    user?.bio,
-    user?.coverImage,
-    user?.name,
-    user?.profileImage,
-    user?.username,
-  ]);
 
   const onSubmit = () => {
     if (

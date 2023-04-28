@@ -1,5 +1,4 @@
 import { useRouter } from "next/router";
-//import { BsTwitter } from "react-icons/bs";
 import { GiRaven } from "react-icons/gi";
 
 const SidebarLogo = () => {

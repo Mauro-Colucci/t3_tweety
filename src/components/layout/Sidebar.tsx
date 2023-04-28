@@ -23,7 +23,7 @@ const Sidebar = () => {
     },
     {
       label: "Profile",
-      href: "/users/123",
+      href: `/users/${sessionData?.user.id}`,
       icon: FaUser,
       auth: true,
     },

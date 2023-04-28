@@ -47,23 +47,6 @@ export const userRouter = createTRPCRouter({
       });
       return user;
     }),
-  //check if we already have it in session on the client
-  getCurrent: protectedProcedure.query(async ({ ctx }) => {
-    const currentUser = await ctx.prisma.user.findUnique({
-      where: {
-        id: ctx.session.user.id,
-      },
-      select: {
-        id: true,
-        bio: true,
-        coverImage: true,
-        name: true,
-        username: true,
-        profileImage: true,
-      },
-    });
-    return currentUser;
-  }),
   getAll: publicProcedure.query(async ({ ctx }) => {
     const users = await ctx.prisma.user.findMany({
       orderBy: {
@@ -78,6 +61,16 @@ export const userRouter = createTRPCRouter({
       const user = await ctx.prisma.user.findUnique({
         where: {
           id: input.userId,
+        },
+        select: {
+          id: true,
+          name: true,
+          createdAt: true,
+          username: true,
+          bio: true,
+          followingIds: true,
+          coverImage: true,
+          profileImage: true,
         },
       });
       const followersCount = await ctx.prisma.user.count({

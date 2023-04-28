@@ -1,5 +1,6 @@
 import { AiOutlineClose } from "react-icons/ai";
 import Button from "./Button";
+import { FC } from "react";
 
 interface ModalProps {
   isOpen: boolean;
@@ -12,7 +13,7 @@ interface ModalProps {
   disabled?: boolean;
 }
 
-const Modal: React.FC<ModalProps> = ({
+const Modal: FC<ModalProps> = ({
   actionLabel,
   isOpen,
   onClose,
