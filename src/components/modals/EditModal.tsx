@@ -1,5 +1,5 @@
 import useEditModal from "~/hooks/useEditModal";
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import Input from "../Input";
 import Modal from "../Modal";
 import { RouterOutputs, api } from "~/utils/api";
