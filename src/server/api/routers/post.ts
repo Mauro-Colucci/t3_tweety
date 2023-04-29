@@ -58,4 +58,21 @@ export const postRouter = createTRPCRouter({
       });
       return posts;
     }),
+  getTest: publicProcedure
+    .input(z.object({ userId: z.string().optional() }))
+    .query(async ({ ctx, input }) => {
+      const { userId } = input;
+      const where = userId ? { userId } : {};
+      const posts = await ctx.prisma.post.findMany({
+        where,
+        include: {
+          user: true,
+          comments: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+      return posts;
+    }),
 });
