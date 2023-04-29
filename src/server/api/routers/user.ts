@@ -93,7 +93,6 @@ export const userRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      //review, I wrote this half asleep...
       const { user } = ctx.session;
       const updatedUser = await ctx.prisma.user.update({
         where: {
@@ -105,27 +104,28 @@ export const userRouter = createTRPCRouter({
     }),
   follow: protectedProcedure
     .input(z.object({ userId: z.string() }))
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ ctx, input: { userId } }) => {
+      //TODO: create a model for follow with follower and followed users or add an entry in User for followers
       const user = await ctx.prisma.user.findUnique({
         where: {
-          id: input.userId,
+          id: userId,
         },
       });
       if (!user) throw new TRPCError({ code: "NOT_FOUND" });
 
       let updatedFollowingIds = [...user.followingIds];
 
-      if (updatedFollowingIds.includes(ctx.session.user.id)) {
+      if (updatedFollowingIds.includes(userId)) {
         updatedFollowingIds = updatedFollowingIds.filter(
-          (id) => id !== ctx.session.user.id
+          (followingIds) => followingIds !== userId
         );
       } else {
-        updatedFollowingIds.push(ctx.session.user.id);
+        updatedFollowingIds.push(userId);
       }
 
       const updatedUser = await ctx.prisma.user.update({
         where: {
-          id: input.userId,
+          id: ctx.session.user.id,
         },
         data: {
           followingIds: updatedFollowingIds,
