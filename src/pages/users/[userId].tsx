@@ -1,6 +1,7 @@
 import { GetStaticProps, type NextPage } from "next";
 import Head from "next/head";
 import Header from "~/components/Header";
+import PostFeed from "~/components/posts/PostFeed";
 import UserBio from "~/components/users/UserBio";
 import UserHero from "~/components/users/UserHero";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
@@ -21,6 +22,7 @@ const UserView: NextPage<{ userId: string }> = ({ userId }) => {
       <Header showBackArrow label={`${user.username}`} />
       <UserHero {...user} />
       <UserBio {...user} />
+      <PostFeed userId={userId} />
     </>
   );
 };

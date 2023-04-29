@@ -93,12 +93,43 @@ export const userRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      //review, I wrote this half asleep...
       const { user } = ctx.session;
       const updatedUser = await ctx.prisma.user.update({
         where: {
           id: user.id,
         },
         data: { ...input },
+      });
+      return updatedUser;
+    }),
+  follow: protectedProcedure
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          id: input.userId,
+        },
+      });
+      if (!user) throw new TRPCError({ code: "NOT_FOUND" });
+
+      let updatedFollowingIds = [...user.followingIds];
+
+      if (updatedFollowingIds.includes(ctx.session.user.id)) {
+        updatedFollowingIds = updatedFollowingIds.filter(
+          (id) => id !== ctx.session.user.id
+        );
+      } else {
+        updatedFollowingIds.push(ctx.session.user.id);
+      }
+
+      const updatedUser = await ctx.prisma.user.update({
+        where: {
+          id: input.userId,
+        },
+        data: {
+          followingIds: updatedFollowingIds,
+        },
       });
       return updatedUser;
     }),

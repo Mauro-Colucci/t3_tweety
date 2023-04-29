@@ -21,3 +21,5 @@ const PostFeed: FC<PostFeedProps> = ({ userId }) => {
   );
 };
 export default PostFeed;
+
+//test with getStaticProps for posts
