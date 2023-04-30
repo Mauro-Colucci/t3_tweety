@@ -24,13 +24,20 @@ declare module "next-auth" {
       id: string;
       // ...other properties
       // role: UserRole;
+      // followingIds: string[];
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    //   // ...other properties
+    //   // role: UserRole;
+    // followingIds: string[];
+  }
+
+  /*   interface JWT {
+    id: string;
+    followingIds: string[];
+  } */
 }
 
 /**
@@ -45,11 +52,13 @@ export const authOptions: NextAuthOptions = {
       user: {
         ...session.user,
         id: user?.id || token?.id,
+        //followingIds: token.followingIds,
       },
     }),
     jwt: ({ token, user }) => {
       if (user) {
         token.id = user.id;
+        //token.followingIds = [...user.followingIds];
       }
       return token;
     },

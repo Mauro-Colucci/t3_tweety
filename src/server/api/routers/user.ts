@@ -82,6 +82,14 @@ export const userRouter = createTRPCRouter({
       });
       return { ...user, followersCount };
     }),
+  getCurrent: protectedProcedure.query(async ({ ctx }) => {
+    const user = await ctx.prisma.user.findUnique({
+      where: {
+        id: ctx.session.user.id,
+      },
+    });
+    return user;
+  }),
   edit: protectedProcedure
     .input(
       z.object({
@@ -108,7 +116,7 @@ export const userRouter = createTRPCRouter({
       //TODO: create a model for follow with follower and followed users or add an entry in User for followers
       const user = await ctx.prisma.user.findUnique({
         where: {
-          id: userId,
+          id: ctx.session.user.id,
         },
       });
       if (!user) throw new TRPCError({ code: "NOT_FOUND" });

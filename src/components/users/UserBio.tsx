@@ -1,28 +1,60 @@
 import { useSession } from "next-auth/react";
 import { FC } from "react";
-import { RouterOutputs } from "~/utils/api";
+import { RouterOutputs, api } from "~/utils/api";
 import moment from "moment";
 import Button from "../Button";
 import { BiCalendar } from "react-icons/bi";
 import useEditModal from "~/hooks/useEditModal";
 import EditModal from "../modals/EditModal";
+import { toast } from "react-hot-toast";
+import useLoginModal from "~/hooks/useLoginModal";
 
 type UserProps = RouterOutputs["user"]["getById"];
 
 const UserBio: FC<UserProps> = (props) => {
-  const { data } = useSession();
+  const { data: sessionData } = useSession();
   const editModal = useEditModal();
+  const loginModal = useLoginModal();
+
+  const { data } = api.user.getCurrent.useQuery(undefined, {
+    enabled: !!sessionData,
+  });
+
+  const ctx = api.useContext();
+
+  const { mutate } = api.user.follow.useMutation({
+    onSuccess: () => {
+      toast.success(`${isFollowing(props.id!) ? "Unfollowed" : "Followed"}`);
+      ctx.user.getCurrent.invalidate();
+    },
+    onError: (e) => {
+      toast.error("Something went wrong");
+    },
+  });
+
+  const isFollowing = (id: string) => {
+    return data?.followingIds.includes(id);
+  };
 
   return (
     <div className="border-b border-neutral-800 pb-4">
       <div className="flex justify-end p-2">
-        {data?.user.id === props.id ? (
+        {data?.id === props.id && (
           <>
             <Button secondary label="Edit" onClick={editModal.onOpen} />
             <EditModal {...props} />
           </>
-        ) : (
-          <Button label="Follow" secondary onClick={() => {}} />
+        )}
+        {!!data && data?.id !== props.id && (
+          <Button
+            label={`${isFollowing(props.id!) ? "Unfollow" : "Follow"}`}
+            secondary={!isFollowing(props.id!)}
+            outline={isFollowing(props.id!)}
+            onClick={() => mutate({ userId: props.id! })}
+          />
+        )}
+        {!sessionData && (
+          <Button label="Login" secondary onClick={loginModal.onOpen} />
         )}
       </div>
       <div className="mt-8 px-4">
