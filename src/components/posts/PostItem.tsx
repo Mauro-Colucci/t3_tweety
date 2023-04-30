@@ -33,6 +33,7 @@ const PostItem: FC<PostItemProps> = ({ post }) => {
       );
       ctx.post.getTest.invalidate();
       ctx.post.getById.invalidate();
+      ctx.user.getCurrent.invalidate();
     },
     onError: () => {
       toast.error("Something went wrong");

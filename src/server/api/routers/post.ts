@@ -103,6 +103,30 @@ export const postRouter = createTRPCRouter({
         updatedLikedIds = updatedLikedIds.filter((likedIds) => likedIds !== id);
       } else {
         updatedLikedIds.push(id);
+
+        const post = await ctx.prisma.post.findUnique({
+          where: {
+            id: postId,
+          },
+        });
+
+        if (post?.userId) {
+          await ctx.prisma.notification.create({
+            data: {
+              body: "Someone liked your post!",
+              userId: post.userId,
+            },
+          });
+
+          await ctx.prisma.user.update({
+            where: {
+              id: post.userId,
+            },
+            data: {
+              hasNotification: true,
+            },
+          });
+        }
       }
 
       const updatedPost = await ctx.prisma.post.update({

@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { RouterOutputs, api } from "~/utils/api";
+import { api } from "~/utils/api";
 import { LoadingSpinner } from "../Loading";
 import PostItem from "./PostItem";
 

@@ -5,9 +5,13 @@ import SidebarLogo from "./SidebarLogo";
 import SidebarItem from "./SidebarItem";
 import SidebarTweetButton from "./SidebarTweetButton";
 import { signOut, useSession } from "next-auth/react";
+import { api } from "~/utils/api";
 
 const Sidebar = () => {
   const { data: sessionData } = useSession();
+  const { data: currentUser } = api.user.getCurrent.useQuery(undefined, {
+    enabled: !!sessionData,
+  });
 
   const items = [
     {
@@ -20,6 +24,7 @@ const Sidebar = () => {
       href: "/notifications",
       icon: BsBellFill,
       auth: true,
+      alert: currentUser?.hasNotification!,
     },
     {
       label: "Profile",

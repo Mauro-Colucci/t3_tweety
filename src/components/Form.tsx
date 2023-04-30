@@ -6,6 +6,7 @@ import { api } from "~/utils/api";
 import { toast } from "react-hot-toast";
 import Button from "./Button";
 import Avatar from "./Avatar";
+import { useRouter } from "next/router";
 
 interface FormProps {
   placeholder: string;
@@ -28,12 +29,27 @@ const Form: FC<FormProps> = ({ placeholder, isComment, postId }) => {
       toast.success("post created");
       setBody("");
       ctx.post.getTest.invalidate();
-      //ctx.post.getAll.invalidate();
     },
     onError: (e) => {
       toast.error("Something went wrong");
     },
   });
+
+  const { mutate: mutateComment } = api.comment.create.useMutation({
+    onSuccess: () => {
+      toast.success("Comment created");
+      setBody("");
+      ctx.post.getById.invalidate();
+      ctx.user.getCurrent.invalidate();
+    },
+    onError: () => {
+      toast.error("Something went wrong");
+    },
+  });
+
+  const post = () => {
+    isComment && postId ? mutateComment({ body, postId }) : mutate({ body });
+  };
 
   return (
     <div className="border-b border-neutral-800 px-5 py-2">
@@ -55,7 +71,7 @@ const Form: FC<FormProps> = ({ placeholder, isComment, postId }) => {
               <Button
                 label="Chirp"
                 disabled={isLoading || !body}
-                onClick={() => mutate({ body })}
+                onClick={post}
               />
             </div>
           </div>

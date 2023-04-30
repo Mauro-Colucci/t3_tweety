@@ -129,6 +129,22 @@ export const userRouter = createTRPCRouter({
         );
       } else {
         updatedFollowingIds.push(userId);
+
+        await ctx.prisma.notification.create({
+          data: {
+            body: "Someone followed you!",
+            userId,
+          },
+        });
+
+        await ctx.prisma.user.update({
+          where: {
+            id: userId,
+          },
+          data: {
+            hasNotification: true,
+          },
+        });
       }
 
       const updatedUser = await ctx.prisma.user.update({

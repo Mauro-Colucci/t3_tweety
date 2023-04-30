@@ -2,6 +2,7 @@ import { GetStaticProps, type NextPage } from "next";
 import Head from "next/head";
 import Form from "~/components/Form";
 import Header from "~/components/Header";
+import CommentFeed from "~/components/posts/CommentFeed";
 import PostItem from "~/components/posts/PostItem";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 import { api } from "~/utils/api";
@@ -12,7 +13,6 @@ const PostView: NextPage<{ postId: string }> = ({ postId }) => {
   });
 
   if (!post) return <div>404</div>;
-
   return (
     <>
       <Head>
@@ -21,6 +21,7 @@ const PostView: NextPage<{ postId: string }> = ({ postId }) => {
       <Header label="Post" showBackArrow />
       <PostItem post={post} />
       <Form postId={postId} isComment placeholder="Post your reply" />
+      <CommentFeed comments={post.comments} />
     </>
   );
 };
