@@ -32,11 +32,22 @@ export const postRouter = createTRPCRouter({
     return posts;
   }),
   getById: publicProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.object({ postId: z.string() }))
     .query(async ({ ctx, input }) => {
       const post = await ctx.prisma.post.findUnique({
         where: {
-          id: input.id,
+          id: input.postId,
+        },
+        include: {
+          user: true,
+          comments: {
+            include: {
+              user: true,
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
+          },
         },
       });
       return post;
@@ -74,5 +85,35 @@ export const postRouter = createTRPCRouter({
         },
       });
       return posts;
+    }),
+  like: protectedProcedure
+    .input(z.object({ postId: z.string() }))
+    .mutation(async ({ ctx, input: { postId } }) => {
+      const { id } = ctx.session.user;
+      const post = await ctx.prisma.post.findUnique({
+        where: {
+          id: postId,
+        },
+      });
+      if (!post) throw new TRPCError({ code: "NOT_FOUND" });
+
+      let updatedLikedIds = [...post.likedIds];
+
+      if (updatedLikedIds.includes(id)) {
+        updatedLikedIds = updatedLikedIds.filter((likedIds) => likedIds !== id);
+      } else {
+        updatedLikedIds.push(id);
+      }
+
+      const updatedPost = await ctx.prisma.post.update({
+        where: {
+          id: postId,
+        },
+        data: {
+          likedIds: updatedLikedIds,
+        },
+      });
+
+      return updatedPost;
     }),
 });

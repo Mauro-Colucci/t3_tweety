@@ -2,23 +2,42 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { FC } from "react";
 import useLoginModal from "~/hooks/useLoginModal";
-import { RouterOutputs } from "~/utils/api";
+import { RouterOutputs, api } from "~/utils/api";
 import moment from "moment";
 import Avatar from "../Avatar";
-import { AiOutlineHeart, AiOutlineMessage } from "react-icons/ai";
+import { AiFillHeart, AiOutlineHeart, AiOutlineMessage } from "react-icons/ai";
+import { toast } from "react-hot-toast";
 
 interface PostItemProps {
-  userId?: string;
+  //userId?: string;
   post: PostProps;
 }
 
 type PostProps = RouterOutputs["post"]["getTest"][number];
 
-const PostItem: FC<PostItemProps> = ({ userId, post }) => {
+const PostItem: FC<PostItemProps> = ({ post }) => {
   const router = useRouter();
   const loginModal = useLoginModal();
 
   const { data: sessionData } = useSession();
+  const ctx = api.useContext();
+
+  const { mutate } = api.post.like.useMutation({
+    onSuccess: () => {
+      toast.success(
+        `${
+          isLiked(sessionData?.user.id!)
+            ? "I don't like it anymore."
+            : "I like it!"
+        }`
+      );
+      ctx.post.getTest.invalidate();
+      ctx.post.getById.invalidate();
+    },
+    onError: () => {
+      toast.error("Something went wrong");
+    },
+  });
 
   const goToUser = (e: any) => {
     e.stopPropagation();
@@ -29,7 +48,12 @@ const PostItem: FC<PostItemProps> = ({ userId, post }) => {
 
   const onLike = (e: any) => {
     e.stopPropagation();
-    loginModal.onOpen();
+    if (!sessionData?.user) loginModal.onOpen();
+    mutate({ postId: post.id });
+  };
+
+  const isLiked = (id: string) => {
+    return post.likedIds.includes(id);
   };
 
   return (
@@ -63,9 +87,17 @@ const PostItem: FC<PostItemProps> = ({ userId, post }) => {
             </div>
             <div
               onClick={onLike}
-              className="flex cursor-pointer items-center gap-2 text-neutral-500 transition hover:text-red-500"
+              className={`flex cursor-pointer items-center gap-2  transition  ${
+                isLiked(sessionData?.user.id!)
+                  ? "text-red-500 hover:text-neutral-500"
+                  : "text-neutral-500 hover:text-red-500"
+              }`}
             >
-              <AiOutlineHeart size={20} />
+              {isLiked(sessionData?.user.id!) ? (
+                <AiFillHeart size={20} />
+              ) : (
+                <AiOutlineHeart size={20} />
+              )}
               <span>{post.likedIds?.length}</span>
             </div>
           </div>
