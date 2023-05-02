@@ -4,7 +4,7 @@ import CommentItem from "./CommentItem";
 import { RouterOutputs } from "~/utils/api";
 
 interface CommentFeedProps {
-  comments?: [Comment & { user: User }];
+  comments?: (Comment & { user: User })[];
 }
 
 const CommentFeed: FC<CommentFeedProps> = ({ comments }) => {

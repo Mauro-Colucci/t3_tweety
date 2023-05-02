@@ -3,11 +3,8 @@ generator client {
 }
 
 datasource db {
-    //provider     = "mysql"
     provider = "postgresql"
     url      = env("DATABASE_URL")
-    //PlanetScale (mysql) does not allow foreign keys in its database schema, so we use this to enable emulation of relations.
-    //relationMode = "prisma"
 }
 
 model Post {
