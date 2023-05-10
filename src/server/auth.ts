@@ -102,12 +102,12 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  pages: {
+    signIn: "/",
+  },
   debug: env.NODE_ENV === "development",
   session: {
     strategy: "jwt",
-  },
-  jwt: {
-    secret: env.NEXTAUTH_JWT_SECRET,
   },
   secret: env.NEXTAUTH_SECRET,
 };

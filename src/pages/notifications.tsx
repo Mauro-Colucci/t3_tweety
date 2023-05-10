@@ -1,7 +1,7 @@
-import { NextPageContext } from "next";
-import { getSession } from "next-auth/react";
+import { GetServerSideProps } from "next";
 import Header from "~/components/Header";
 import NotificationsFeed from "~/components/NotificationsFeed";
+import { getServerAuthSession } from "~/server/auth";
 
 const Notifications = () => {
   return (
@@ -13,8 +13,8 @@ const Notifications = () => {
 };
 export default Notifications;
 
-export async function getServerSideProps(context: NextPageContext) {
-  const session = await getSession(context);
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getServerAuthSession(context);
   if (!session) {
     return {
       redirect: {
@@ -29,4 +29,4 @@ export async function getServerSideProps(context: NextPageContext) {
       ...session,
     },
   };
-}
+};

@@ -10,7 +10,7 @@ import { api } from "~/utils/api";
 const Sidebar = () => {
   const { data: sessionData } = useSession();
   const { data: currentUser } = api.user.getCurrent.useQuery(undefined, {
-    enabled: !!sessionData,
+    enabled: !!sessionData?.user,
   });
 
   const items = [
